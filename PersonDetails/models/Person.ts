@@ -247,11 +247,46 @@ export class Person extends BaseModel {
             this.pool.then(() => {
                 return queryRequest.execute('dbo.spSelectPersonalDetails');                
             }).then(result => {
-                resolve(result.recordset[0]);
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset[0]);
+                } else {
+                    reject('No person found.');
+                }
+                
             }).catch(e => {
                 reject(e);
             });    
         });        
+    }
+
+    public getWeekdayAvailability(id?, tz?):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = tz;
+            }
+
+            if(id) {
+                personId = id;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectWeekdayAvailability');                
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+                
+            }).catch(e => {
+                reject(e);
+            }); 
+        });
     }
     public closeConnection() {
         this.pool.then(() => {
