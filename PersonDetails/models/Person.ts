@@ -288,6 +288,31 @@ export class Person extends BaseModel {
             }); 
         });
     }
+
+    public getSuppliedAreas(id?, supplierId=0):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectSuppliedAreas');                
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+                
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
     public closeConnection() {
         this.pool.then(() => {
             return sql.close();
