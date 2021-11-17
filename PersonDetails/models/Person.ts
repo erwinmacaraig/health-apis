@@ -245,7 +245,7 @@ export class Person extends BaseModel {
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                return queryRequest.execute('dbo.spSelectPersonalDetails');                
+                return queryRequest.execute('spSelectPersonalDetails');                
             }).then(result => {
                 if (result.recordset.length > 0) {
                     resolve(result.recordset[0]);
@@ -296,7 +296,7 @@ export class Person extends BaseModel {
                 personId = id;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, personId);
+            
             queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectSuppliedAreas');                
@@ -311,6 +311,54 @@ export class Person extends BaseModel {
                 reject(e);
             });
 
+        });
+    }
+
+    /**
+     * 
+     * @param id an integer the represents the intPersonId
+     * @param dayOfWeek integer for the Day int value 1 for Monday up until 7 for Sunday
+     * @param timeOfDay string formats to "1,2,3" for Morning, Afternoon, Evening respectively
+     * @param modifiedBy integer id that represents who modified the record
+     * @returns a Promise that resolves to boolean when successful 
+     * @description calls stored procedure spInsertWeekdayAvailability (@chvTimeOfDayArray nvarchar(256), @intDayOfWeekID INT, @intPersonID INT, @intModifiedByID INT)
+     * 
+     */
+    public putWeekdayAvailability(id?, dayOfWeek:number = 0,  timeOfDay:string = '', modifiedBy:number = 0):Promise<boolean>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;            
+            if (id && Number.isInteger(id)) {
+                personId = id;
+            }
+            let modifiedById = personId;
+            if (modifiedBy && Number.isInteger(modifiedBy)) {
+                modifiedById = modifiedBy;
+            }
+            if(!Number.isInteger(dayOfWeek)){
+                reject('Invalid dayOfWeek parameter supplied');
+                return;
+            }
+            if(dayOfWeek < 0 || dayOfWeek > 7) {
+                reject('dayOfWeek out of bounds');
+                return;
+            }
+            if(timeOfDay.trim().length == 0) {
+                reject('Invalid timeOfDay parameter supplied');
+                return;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('chvTimeOfDayArray', sql.VarChar(255), timeOfDay);
+            queryRequest.input('intDayOfWeekID', sql.Int, dayOfWeek);
+            queryRequest.input('intModifiedByID', sql.Int, modifiedById);
+            this.pool.then(() => {
+                return queryRequest.execute('spInsertWeekdayAvailability');
+            }).then(() => {
+                resolve(true);
+            }).catch(e => {
+                reject(e);
+            });
+            
         });
     }
     public closeConnection() {
