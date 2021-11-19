@@ -21,14 +21,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         }
         
         if (req.body.chvLocalGovernmentAreaArray) {
-            if(typeof req.body.chvLocalGovernmentAreaArray === 'object') {
-                let arr = Object.values(req.body.chvLocalGovernmentAreaArray);
-                let governmentAreaArr = arr.filter((item) => {
-                    return Number.isInteger(+item) && item > 0;
-
-                });                
-                governmentAreaArrStr = governmentAreaArr.join(',');
-            }
+            
+            if ( (typeof req.body.chvLocalGovernmentAreaArray) == 'string' && (req.body.chvLocalGovernmentAreaArray as string).trim().length > 0) {
+                governmentAreaArrStr = req.body.chvLocalGovernmentAreaArray;
+                context.log('*****', typeof req.body.chvLocalGovernmentAreaArray);
+            } 
+            
         }
         if (req.body.intSuppliedServiceGroupID) {
             if (Number.isInteger(+req.body.intSuppliedServiceGroupID)){
