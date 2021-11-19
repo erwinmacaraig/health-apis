@@ -296,7 +296,7 @@ export class Person extends BaseModel {
                 personId = id;
             }
             const queryRequest = new sql.Request();
-            
+            queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectSuppliedAreas');                
@@ -359,6 +359,42 @@ export class Person extends BaseModel {
                 reject(e);
             });
             
+        });
+    }
+
+    /**
+     * 
+     * @param id an integer the represents the intPersonId
+     * @param localGovernmentAreaArr  string representation of an array of areas (defaults to emptry string),
+     * refer to dbo.tlkpLocalGovernnmentAreas
+     * @param suppliedServicesGroupId integer value defaults to 0. 
+     * @param supplierAddressId integer value that represents the supplier address id, defaults to a NULL value
+     * @param modifiedBy integer value that holds the id of the person inserting the record
+     * @returns 
+     */
+    public putSuppliedAreas(id?, localGovernmentAreaArr='', suppliedServicesGroupId=0, supplierAddressId=null, modifiedBy = null):Promise<boolean>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;            
+            if (id && Number.isInteger(+id)) {
+                personId = id;
+            }
+            let modifiedById = personId;
+            if (modifiedBy && Number.isInteger(modifiedBy)) {
+                modifiedById = modifiedBy;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('chvLocalGovernmentAreaArray', sql.VarChar(255), localGovernmentAreaArr);
+            queryRequest.input('intSuppliedServiceGroupID', sql.Int, suppliedServicesGroupId);
+            queryRequest.input('intSupplierAddressID', sql.Int, supplierAddressId);
+            queryRequest.input('intModifiedByID', sql.Int, modifiedById);
+            this.pool.then(() => {
+                return queryRequest.execute('spInsertSuppliedAreas');
+            }).then(() => {
+                resolve(true);
+            }).catch(e => {
+                reject(e);
+            });
         });
     }
     public closeConnection() {
