@@ -2,21 +2,24 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    
     let id:number;
-    if (req.query.id) {
+   
+    if(req.query.id) {
         id = +req.query.id;
         const person = new Person();
-        const tz = req.query.tz || null;
+        let isActiveInt = 1;        
+        if (Number.isInteger(+req.query.intIsActive)) {
+            isActiveInt = +req.query.intIsActive > 0 ? 1:0;
+        }
         try {
-            let res = await person.getPersonDetails(id, tz);
+            let res = await person.getContactPersons(id, isActiveInt);
             context.res = {
                 status: 200,
                 body: res,
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            };  
+            }; 
         } catch(e) {
             context.log(e);
             context.res = {
@@ -26,7 +29,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                     'Content-Type': 'application/json'
                 }
             }; 
-        }            
+        }
     } else {
         context.res = {
             status: 400, 
@@ -36,36 +39,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
         }; 
     }
-    /*
-    if (req.method === 'POST') {
-        
-        const newPerson = new Person(null, context);
-        try {
-            
-            newPerson.setFieldValues(req.body);
-            let data = await newPerson.dbUpdate();
-
-            context.res = {
-                status:200,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: {
-                    "message": data
-                }
-            };
-        } catch(e){
-
-            context.res = {
-                status:400,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: e
-            };
-        }        
-    } 
-    */
 
 };
 

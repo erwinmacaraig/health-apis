@@ -397,6 +397,109 @@ export class Person extends BaseModel {
             });
         });
     }
+    
+    public getContactPersons(id?, isActiveInt:number=0): Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intIsActive', sql.Int, isActiveInt);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectContactPersons')
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    public getTeam(id?, goodRelIdInt:number=1, tz:number=null): Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intGoodRelationshipID', sql.Int, goodRelIdInt);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectTeam');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    public getJobDescription(id?, tz:number=null):Promise<string>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = tz;
+            }
+
+            if(id) {
+                personId = id;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectJobDescriptions');                
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset[0]);
+                } else {
+                    reject('No record found.');
+                }
+                
+            }).catch(e => {
+                reject(e);
+            }); 
+        });
+    }
+
+    public getContactSuppliers(id?, isActiveInt:number = 1):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if(id) {
+                personId = id;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intIsActive', sql.Int, isActiveInt);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectContactSuppliers')
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
     public closeConnection() {
         this.pool.then(() => {
             return sql.close();

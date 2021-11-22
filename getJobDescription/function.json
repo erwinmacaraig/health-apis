@@ -5,7 +5,9 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["post"]
+      "methods": [
+        "get"
+      ]
     },
     {
       "type": "http",
@@ -13,5 +15,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/putSuppliedAreas/index.js"
+  "scriptFile": "../dist/getJobDescription/index.js"
 }
