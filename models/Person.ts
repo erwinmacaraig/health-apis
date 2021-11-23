@@ -488,7 +488,7 @@ export class Person extends BaseModel {
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intIsActive', sql.Int, isActiveInt);
             this.pool.then(() => {
-                return queryRequest.execute('spSelectContactSuppliers')
+                return queryRequest.execute('spSelectContactSuppliers');
             }).then(result => {
                 if (result.recordset.length > 0) {
                     resolve(result.recordset);
@@ -500,6 +500,33 @@ export class Person extends BaseModel {
             });
         });
     }
+
+    public getPersonalAssessments(id?, startDateDte:string=null, tz:number=null):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, id);
+            queryRequest.input('dteStartDate', sql.DateTime2, startDateDte);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalAssessments');
+            }).then(result => {
+                if(result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
     public closeConnection() {
         this.pool.then(() => {
             return sql.close();
