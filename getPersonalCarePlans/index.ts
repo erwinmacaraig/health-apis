@@ -6,7 +6,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const startDateDte = req.query.dteStartDate || null;
     const tz = +req.query.tz || null;
     let errorMessages:Array<Object> = [];
-    if (!id)) {
+    if (!id) {
         errorMessages.push({
             error: 'Invalid person id'
         });
