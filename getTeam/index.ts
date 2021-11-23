@@ -6,11 +6,29 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const tz = +req.query.tz || null;
     id = +req.query.id || 0;
     let goodRelationshipIdInt = 1;
+
+    let errorMessages:Array<Object> = [];
+    if (!id) {
+        errorMessages.push({
+            error: 'Invalid person id'
+        });
+    }
+
     
     if (Number.isInteger(+req.query.intGoodRelationshipID)) {
         goodRelationshipIdInt = +req.query.intGoodRelationshipID > 0 ? 1:0;
     }
 
+    if (errorMessages.length > 0) {
+        context.res = {
+            status: 400, 
+            body: errorMessages,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        return;
+    }
     try {
         const person = new Person();       
         let res = await person.getTeam(id, goodRelationshipIdInt, tz);

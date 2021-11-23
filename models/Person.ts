@@ -422,6 +422,13 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * Lists the teammates of a particular person
+     * @param id integer value that represents tblPerson.intPersonID
+     * @param goodRelIdInt integer 0 or 1 representing good relationship 
+     * @param tz integer timezone value (defaults to 10)
+     * @returns Promise that resolves to an Object array representing the teammates 
+     */
     public getTeam(id?, goodRelIdInt:number=1, tz:number=null): Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
