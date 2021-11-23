@@ -491,6 +491,12 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * gives out a list of suppliers and the data for each
+     * @param id integer representation of tblPersons.intPersonID
+     * @param isActiveInt integer value for specifying that the supplier is active or inactive
+     * @returns Promise that resolves an Object array containing the records for suppliers
+     */
     public getContactSuppliers(id?, isActiveInt:number = 1):Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
