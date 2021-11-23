@@ -16,7 +16,11 @@ export class Person extends BaseModel {
         
     }
 
-    public load(){
+    /**
+     * Loads a particular record in the databse
+     * @returns Promise that resolves to an object which contains a record in the tblPersons table given an id
+     */
+    public load():Promise<Object>{
         return new Promise((resolve, reject) => {
             let query = `SELECT * FROM  dbo.tblPersons WHERE intPersonID = ${this.id}`;
             this.pool.then(() => {                                              
@@ -30,6 +34,10 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * Inserts a record in the tblPersons table 
+     * @returns Promise that resolves to a boolean true or false depending on the result of the operation
+     */
     public dbInsert(){
         return new Promise((resolve, reject) => {
             this.pool.then(() => {                
@@ -114,6 +122,10 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * Updates a record in the tblPersons table
+     * @returns Promise that resolves to a  boolean true or false depending on the result of the operation
+     */
     public dbUpdate(){
         return new Promise((resolve, reject) => {
             this.pool.then(() => {                
@@ -221,14 +233,29 @@ export class Person extends BaseModel {
         
     }
 
+    /**
+     * 
+     * @param key the key index representing the column name in the tblPersons table
+     * @returns any
+     */
     public get(key:string){
         return this.dbFields[key];
     }
 
+    /**
+     * set field values where in the keys are the columns of the tblPersons table
+     * @param values key-value pairs
+     */
     public setFieldValues(values:object={}) {
         this.dbFields = {...values};
     }
 
+    /**
+     * Gives out personal information details of a person
+     * @param id integer value for tblPersons.intPersonID
+     * @param tz integer representation of timezone, defaults to 10
+     * @returns Promise that resolves to an object
+     */
     public getPersonDetails(id?, tz?): Promise<Object> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
@@ -259,6 +286,12 @@ export class Person extends BaseModel {
         });        
     }
 
+    /**
+     * list the availability of a care worker person
+     * @param id integer value representing the unique id of a care worker person (tblPersons.intPersonID)
+     * @param tz integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
     public getWeekdayAvailability(id?, tz?):Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
@@ -289,6 +322,12 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * Stores information for a person's supplied areas of responsibility
+     * @param id integer value representing tblPersons.intPersonID
+     * @param supplierId integer value for the supplier ID
+     * @returns Promise that resolves to an array of Objects
+     */
     public getSuppliedAreas(id?, supplierId=0):Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
@@ -397,7 +436,13 @@ export class Person extends BaseModel {
             });
         });
     }
-    
+
+    /**
+     * retrieves the active contact person list
+     * @param id integer value representing tblPersons.intPersonID
+     * @param isActiveInt integer value, 1 or greater for active and 0 for inactive
+     * @returns Promise that will resolve to an array of Objects 
+     */
     public getContactPersons(id?, isActiveInt:number=0): Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
@@ -553,6 +598,13 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * Retrieve personal care plans and assessment for a person
+     * @param id integer value for the person representing tblPersons.intPersonID
+     * @param startDateDte DateTime2 value for the start of the assessment
+     * @param tz integer value defaults to 10
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
     public getPersonalCarePlans(id?, startDateDte:string=null, tz:number=null):Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
@@ -608,6 +660,10 @@ export class Person extends BaseModel {
             });
         });
     }
+
+    /**
+     * closes database connection
+     */
     public closeConnection() {
         this.pool.then(() => {
             return sql.close();
