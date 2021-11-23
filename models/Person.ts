@@ -520,6 +520,13 @@ export class Person extends BaseModel {
         });
     }
 
+    /**
+     * Retrieves the personal assessment of a care worker to a person
+     * @param id integer representing tblPersons.intPersonID
+     * @param startDateDte DateTime2 value in the form of YYYY-MM-DD
+     * @param tz integer value representing the timezone
+     * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
+     */
     public getPersonalAssessments(id?, startDateDte:string=null, tz:number=null):Promise<Array<Object>>{
         return new Promise((resolve, reject) => {
             let personId = this.id;

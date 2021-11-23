@@ -6,9 +6,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const startDateDte = req.query.dteStartDate || null;
     const tz = +req.query.tz || null;
     let errorMessages:Array<Object> = [];
-
     
-    if (!Number.isInteger(id)) {
+    if (!id) {
         errorMessages.push({
             error: 'Invalid person id'
         });
@@ -17,12 +16,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         errorMessages.push({
             error: 'Invalid Date'
         });
-    }
-    if (tz && !Number.isInteger(tz)) {
-        errorMessages.push({
-            error: 'Invalid time zone'
-        });
-    }
+    }    
 
     if (errorMessages.length > 0) {
         context.res = {
@@ -36,7 +30,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const person = new Person();
-        let res = await person.getPersonalAssessments(id, startDateDte)
+        let res = await person.getPersonalAssessments(id, startDateDte, tz);
         context.res = {
             status: 200, 
             body: res,
