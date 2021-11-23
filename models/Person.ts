@@ -455,7 +455,13 @@ export class Person extends BaseModel {
         });
     }
 
-    public getJobDescription(id?, tz:number=null):Promise<string>{
+    /**
+     * Gives you the particular job details and description of a person
+     * @param id integer representing tblPersons.intPersonID
+     * @param tz integer representation of timezone
+     * @returns Promise that resolves to an Object containing key value pairs of the person
+     */
+    public getJobDescription(id?, tz:number=null):Promise<Object>{
         return new Promise((resolve, reject) => {
             let personId = this.id;
             let intTimeZone = null;

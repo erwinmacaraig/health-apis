@@ -5,7 +5,22 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const id:number = +req.query.id || 0;
     const person = new Person();
     const tz = +req.query.tz || null;
-
+    let errorMessages:Array<Object> = [];
+    if (!id) {
+        errorMessages.push({
+            error: 'Invalid person id'
+        });
+    }
+    if (errorMessages.length > 0) {
+        context.res = {
+            status: 400, 
+            body: errorMessages,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        return;
+    }
     try {
         let res = await person.getJobDescription(id, tz);
         context.res = {
