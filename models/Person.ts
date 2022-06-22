@@ -804,6 +804,72 @@ SELECT vwPersonDetails.intPersonID,
     }
 
     /**
+     * Retrieves the personal assessment of a care worker to a person
+     * @param id integer representing tblPersons.intPersonID
+     * @param dteEndDate DateTime2 value in the form of YYYY-MM-DD
+     * @param tz integer value representing the timezone
+     * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
+     */
+    public getScheduledEvents(id?, dteEndDate: string = null, tz: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            // [spSelectScheduledEvents] (@dteEndDate datetime2, @intPersonID int, @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('dteEndDate', sql.DateTime2, dteEndDate);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectScheduledEvents');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
+    /**
+     * Retrieves the personal assessment of a care worker to a person
+     * @param id integer representing tblPersons.intPersonID
+     * @param tz integer value representing the timezone
+     * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
+     */
+    public getScheduledEvent(id?, tz: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            // [spSelectScheduledEvent] (@intPersonID int, @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectScheduledEvent');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
+    /**
      * closes database connection
      */
     public closeConnection() {
