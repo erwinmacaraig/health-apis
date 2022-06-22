@@ -752,8 +752,8 @@ SELECT vwPersonDetails.intPersonID,
             // [spSelectPersonalNotices] (@intPersonID int, @chvNoticeFor nvarchar(255), @chvNoticeVisibleToArray nvarchar(510), @intTimeZone int) 
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, id);
-            queryRequest.input('chvNoticeFor', sql.nVarChar(255), noticeFor);
-            queryRequest.input('chvNoticeVisibleToArray', sql.nVarChar(510), noticeVisibleTo);
+            queryRequest.input('chvNoticeFor', sql.VarChar(255), noticeFor);
+            queryRequest.input('chvNoticeVisibleToArray', sql.VarChar(510), noticeVisibleTo);
             queryRequest.input('intTimeZone', sql.Int, tz);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalNotices');
