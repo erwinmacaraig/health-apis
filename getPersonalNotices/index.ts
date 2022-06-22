@@ -35,8 +35,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         return;
     }
     try {
-        const person = new Person();
-        let res = await person.getPersonalNotices(id, noticeFor, noticeVisibleToArray, tz);
+        const notice = new Person();
+        let res = await notice.getPersonalNotices(id, noticeFor, noticeVisibleToArray, tz);
         context.res = {
             status: 200, 
             body: res,
