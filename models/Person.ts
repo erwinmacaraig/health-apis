@@ -845,13 +845,13 @@ SELECT vwPersonDetails.intPersonID,
      */
     public getScheduledEvent(id?, tz: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
+            let eventID = this.id;
             if (id) {
-                personId = id;
+                eventID = id;
             }
-            // [spSelectScheduledEvent] (@intPersonID int, @intTimeZone int) 
+            // [spSelectScheduledEvent] (@intScheduledEventID int, @intTimeZone int) 
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intScheduledEventID', sql.Int, eventID);
             queryRequest.input('intTimeZone', sql.Int, tz);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectScheduledEvent');
