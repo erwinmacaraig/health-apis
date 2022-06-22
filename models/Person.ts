@@ -751,12 +751,44 @@ SELECT vwPersonDetails.intPersonID,
             }
             // [spSelectPersonalNotices] (@intPersonID int, @chvNoticeFor nvarchar(255), @chvNoticeVisibleToArray nvarchar(510), @intTimeZone int) 
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, id);
+            queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('chvNoticeFor', sql.VarChar(255), noticeFor);
             queryRequest.input('chvNoticeVisibleToArray', sql.VarChar(510), noticeVisibleTo);
             queryRequest.input('intTimeZone', sql.Int, tz);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalNotices');
+            }).then(result => {
+                if(result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
+    /**
+     * Retrieve personal care plans and assessment for a person
+     * @param id integer value for the person representing tblPersons.intPersonID
+     * @param tz integer value defaults to 10
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
+    public getNotice(id?, tz:number=null):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let intNoticeID = this.id;
+            if (id) {
+                intNoticeID = id;
+            }
+            // [spSelectNotice] (@intNoticeID int, @intTimeZone int)
+            const queryRequest = new sql.Request();
+            queryRequest.input('intNoticeID', sql.Int, intNoticeID);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectNotice');
             }).then(result => {
                 if(result.recordset.length > 0) {
                     resolve(result.recordset);
