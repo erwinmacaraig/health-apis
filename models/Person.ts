@@ -1,11 +1,11 @@
 import { BaseModel } from "./BaseModel";
-import * as sql  from 'mssql';
+import * as sql from 'mssql';
 import { reject, resolve } from "promise";
 import { Context } from "@azure/functions";
 
 export class Person extends BaseModel {
-    context:Context = null;
-    constructor(id?, context?){
+    context: Context = null;
+    constructor(id?, context?) {
         super();
         if (id) {
             this.id = id;
@@ -13,17 +13,17 @@ export class Person extends BaseModel {
         if (context) {
             this.context = context;
         }
-        
+
     }
 
     /**
      * Loads a particular record in the databse
      * @returns Promise that resolves to an object which contains a record in the tblPersons table given an id
      */
-    public load():Promise<Object>{
+    public load(): Promise<Object> {
         return new Promise((resolve, reject) => {
             let query = `SELECT * FROM  dbo.tblPersons WHERE intPersonID = ${this.id}`;
-            this.pool.then(() => {                                              
+            this.pool.then(() => {
                 return sql.query(query);
             }).then(result => {
                 this.dbFields = result.recordset[0];
@@ -38,28 +38,28 @@ export class Person extends BaseModel {
      * Inserts a record in the tblPersons table 
      * @returns Promise that resolves to a boolean true or false depending on the result of the operation
      */
-    public dbInsert(){
+    public dbInsert() {
         return new Promise((resolve, reject) => {
-            this.pool.then(() => {                
+            this.pool.then(() => {
                 const queryRequest = new sql.Request();
-                
+
                 // FIELDS THAT CANNOT BE NULL
-                queryRequest.input('chvUniqueCode', sql.NVarChar, new Date().toISOString().split('').map(v=>v.charCodeAt(0)).reduce((a,v)=>a+((a<<7)+(a<<3))^v).toString(16));
+                queryRequest.input('chvUniqueCode', sql.NVarChar, new Date().toISOString().split('').map(v => v.charCodeAt(0)).reduce((a, v) => a + ((a << 7) + (a << 3)) ^ v).toString(16));
                 queryRequest.input('chvFirstName', sql.NVarChar, this.dbFields['chvFirstName']);
                 queryRequest.input('chvLastName', sql.NVarChar, this.dbFields['chvLastName']);
                 queryRequest.input('intIsActiveID', sql.Int, this.dbFields['intIsActiveID']);
                 queryRequest.input('intCountryID', sql.Int, this.dbFields['intCountryID']);
                 queryRequest.input('intPersonModifiedByID', sql.Int, this.dbFields['intPersonModifiedByID']);
                 queryRequest.input('dtePersonModified', sql.DateTime2, this.dbFields['dtePersonModified']);
-                let 
+                let
                     chvTitle = ('chvTitle' in this.dbFields) ? this.dbFields['chvTitle'] : null,
                     chvPreferredName = ('chvPreferredName' in this.dbFields) ? this.dbFields['chvPreferredName'] : null,
                     chvGenderID = ('chvGenderID' in this.dbFields) ? this.dbFields['chvGenderID'] : null,
-                    dteDateOfBirth =('dteDateOfBirth' in this.dbFields) ? this.dbFields['dteDateOfBirth'] :  null,
+                    dteDateOfBirth = ('dteDateOfBirth' in this.dbFields) ? this.dbFields['dteDateOfBirth'] : null,
                     chvEmailAddress = ('chvEmailAddress' in this.dbFields) ? this.dbFields['chvEmailAddress'] : null,
                     intBirthCountryID = ('intBirthCountryID' in this.dbFields) ? this.dbFields['intBirthCountryID'] : null,
-                    intNationalityID =('intNationalityID' in this.dbFields) ? this.dbFields['intNationalityID'] :  null,
-                    intReligionID = ('intReligionID' in this.dbFields) ? this.dbFields['intReligionID'] : null,                    
+                    intNationalityID = ('intNationalityID' in this.dbFields) ? this.dbFields['intNationalityID'] : null,
+                    intReligionID = ('intReligionID' in this.dbFields) ? this.dbFields['intReligionID'] : null,
                     chvPhoneNumber = ('chvPhoneNumber' in this.dbFields) ? this.dbFields['chvPhoneNumber'] : null,
                     chvUnitID = ('chvUnitID' in this.dbFields) ? this.dbFields['chvUnitID'] : null,
                     chvBuildingName = ('chvBuildingName' in this.dbFields) ? this.dbFields['chvBuildingName'] : null,
@@ -77,7 +77,7 @@ export class Person extends BaseModel {
                 queryRequest.input('chvEmailAddress', sql.NVarChar, chvEmailAddress);
                 queryRequest.input('intBirthCountryID', sql.Int, intBirthCountryID);
                 queryRequest.input('intNationalityID', sql.Int, intNationalityID);
-                queryRequest.input('intReligionID', sql.Int, intReligionID);                
+                queryRequest.input('intReligionID', sql.Int, intReligionID);
                 queryRequest.input('chvUnitID', sql.NVarChar(50), chvUnitID);
                 queryRequest.input('chvPhoneNumber', sql.NVarChar(50), chvPhoneNumber);
                 queryRequest.input('chvBuildingName', sql.NVarChar, chvBuildingName);
@@ -113,7 +113,7 @@ export class Person extends BaseModel {
                     @dtePersonModified,
                     @chvLatitude,
                     @chvLongitude)`;
-                return queryRequest.query(insertSQL);                 
+                return queryRequest.query(insertSQL);
             }).then(result => {
                 resolve(result);
             }).catch(e => {
@@ -126,29 +126,29 @@ export class Person extends BaseModel {
      * Updates a record in the tblPersons table
      * @returns Promise that resolves to a  boolean true or false depending on the result of the operation
      */
-    public dbUpdate(){
+    public dbUpdate() {
         return new Promise((resolve, reject) => {
-            this.pool.then(() => {                
-                const queryRequest = new sql.Request();  
-                 
+            this.pool.then(() => {
+                const queryRequest = new sql.Request();
+
                 // FIELDS THAT CANNOT BE NULL
                 queryRequest.input('intPersonID', sql.Int, this.dbFields['intPersonID']);
-                queryRequest.input('chvUniqueCode', sql.NVarChar, new Date().toISOString().split('').map(v=>v.charCodeAt(0)).reduce((a,v)=>a+((a<<7)+(a<<3))^v).toString(16));
+                queryRequest.input('chvUniqueCode', sql.NVarChar, new Date().toISOString().split('').map(v => v.charCodeAt(0)).reduce((a, v) => a + ((a << 7) + (a << 3)) ^ v).toString(16));
                 queryRequest.input('chvFirstName', sql.NVarChar, this.dbFields['chvFirstName']);
                 queryRequest.input('chvLastName', sql.NVarChar, this.dbFields['chvLastName']);
                 queryRequest.input('intIsActiveID', sql.Int, this.dbFields['intIsActiveID']);
                 queryRequest.input('intCountryID', sql.Int, this.dbFields['intCountryID']);
                 queryRequest.input('intPersonModifiedByID', sql.Int, this.dbFields['intPersonModifiedByID']);
                 queryRequest.input('dtePersonModified', sql.DateTime2, this.dbFields['dtePersonModified']);
-                let 
+                let
                     chvTitle = ('chvTitle' in this.dbFields) ? this.dbFields['chvTitle'] : null,
                     chvPreferredName = ('chvPreferredName' in this.dbFields) ? this.dbFields['chvPreferredName'] : null,
                     chvGenderID = ('chvGenderID' in this.dbFields) ? this.dbFields['chvGenderID'] : null,
-                    dteDateOfBirth =('dteDateOfBirth' in this.dbFields) ? this.dbFields['dteDateOfBirth'] :  null,
+                    dteDateOfBirth = ('dteDateOfBirth' in this.dbFields) ? this.dbFields['dteDateOfBirth'] : null,
                     chvEmailAddress = ('chvEmailAddress' in this.dbFields) ? this.dbFields['chvEmailAddress'] : null,
                     intBirthCountryID = ('intBirthCountryID' in this.dbFields) ? this.dbFields['intBirthCountryID'] : null,
-                    intNationalityID =('intNationalityID' in this.dbFields) ? this.dbFields['intNationalityID'] :  null,
-                    intReligionID = ('intReligionID' in this.dbFields) ? this.dbFields['intReligionID'] : null,                    
+                    intNationalityID = ('intNationalityID' in this.dbFields) ? this.dbFields['intNationalityID'] : null,
+                    intReligionID = ('intReligionID' in this.dbFields) ? this.dbFields['intReligionID'] : null,
                     chvPhoneNumber = ('chvPhoneNumber' in this.dbFields) ? this.dbFields['chvPhoneNumber'] : null,
                     chvUnitID = ('chvUnitID' in this.dbFields) ? this.dbFields['chvUnitID'] : null,
                     chvBuildingName = ('chvBuildingName' in this.dbFields) ? this.dbFields['chvBuildingName'] : null,
@@ -166,7 +166,7 @@ export class Person extends BaseModel {
                 queryRequest.input('chvEmailAddress', sql.NVarChar, chvEmailAddress);
                 queryRequest.input('intBirthCountryID', sql.Int, intBirthCountryID);
                 queryRequest.input('intNationalityID', sql.Int, intNationalityID);
-                queryRequest.input('intReligionID', sql.Int, intReligionID);                
+                queryRequest.input('intReligionID', sql.Int, intReligionID);
                 queryRequest.input('chvUnitID', sql.NVarChar(50), chvUnitID);
                 queryRequest.input('chvPhoneNumber', sql.NVarChar(50), chvPhoneNumber);
                 queryRequest.input('chvBuildingName', sql.NVarChar, chvBuildingName);
@@ -202,8 +202,8 @@ export class Person extends BaseModel {
                     dtePersonModified = @dtePersonModified,
                     chvLatitude = @chvLatitude,
                     chvLongitude = @chvLongitude
-                WHERE intPersonID = @intPersonID`; 
-                return queryRequest.query(updateSQL);                 
+                WHERE intPersonID = @intPersonID`;
+                return queryRequest.query(updateSQL);
             }).then(result => {
                 resolve('UPDATE SUCCESSFUL');
             }).catch(e => {
@@ -211,26 +211,26 @@ export class Person extends BaseModel {
             });
         });
     }
-    public create(createData:object = {}, context):any{
-        this.dbFields = {...createData};
-        if('intPersonID' in this.dbFields) {
+    public create(createData: object = {}, context): any {
+        this.dbFields = { ...createData };
+        if ('intPersonID' in this.dbFields) {
             this.id = this.dbFields['intPersonID'];
-            this.dbUpdate().then(() => {                
+            this.dbUpdate().then(() => {
                 resolve('Update Success');
-            }).catch(e => {               
+            }).catch(e => {
                 reject(e);
             });
-           
+
         } else {
             this.dbInsert().then(() => {
                 resolve('Insert Success')
             }).catch(e => {
                 reject(e);
             });
-            
+
         }
         return;
-        
+
     }
 
     /**
@@ -238,7 +238,7 @@ export class Person extends BaseModel {
      * @param key the key index representing the column name in the tblPersons table
      * @returns any
      */
-    public get(key:string){
+    public get(key: string) {
         return this.dbFields[key];
     }
 
@@ -246,8 +246,8 @@ export class Person extends BaseModel {
      * set field values where in the keys are the columns of the tblPersons table
      * @param values key-value pairs
      */
-    public setFieldValues(values:object={}) {
-        this.dbFields = {...values};
+    public setFieldValues(values: object = {}) {
+        this.dbFields = { ...values };
     }
 
     /**
@@ -265,25 +265,25 @@ export class Person extends BaseModel {
                 intTimeZone = tz;
             }
 
-            if(id) {
+            if (id) {
                 personId = id;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                return queryRequest.execute('spSelectPersonalDetails');                
+                return queryRequest.execute('spSelectPersonalDetails');
             }).then(result => {
                 if (result.recordset.length > 0) {
                     resolve(result.recordset[0]);
                 } else {
                     reject('No person found.');
                 }
-                
+
             }).catch(e => {
                 reject(e);
-            });    
-        });        
+            });
+        });
     }
 
     /**
@@ -292,7 +292,7 @@ export class Person extends BaseModel {
      * @param tz integer value for the timezone defaults to 10
      * @returns Promise that resolves to an array of objects
      */
-    public getWeekdayAvailability(id?, tz?):Promise<Array<Object>>{
+    public getWeekdayAvailability(id?, tz?): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             let intTimeZone = null;
@@ -301,24 +301,24 @@ export class Person extends BaseModel {
                 intTimeZone = tz;
             }
 
-            if(id) {
+            if (id) {
                 personId = id;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                return queryRequest.execute('spSelectWeekdayAvailability');                
+                return queryRequest.execute('spSelectWeekdayAvailability');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
                 } else {
                     resolve(result.recordset);
                 }
-                
+
             }).catch(e => {
                 reject(e);
-            }); 
+            });
         });
     }
 
@@ -328,7 +328,7 @@ export class Person extends BaseModel {
      * @param supplierId integer value for the supplier ID
      * @returns Promise that resolves to an array of Objects
      */
-    public getSuppliedAreas(id?, supplierId=0):Promise<Array<Object>>{
+    public getSuppliedAreas(id?, supplierId = 0): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             if (id) {
@@ -338,14 +338,14 @@ export class Person extends BaseModel {
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
             this.pool.then(() => {
-                return queryRequest.execute('spSelectSuppliedAreas');                
+                return queryRequest.execute('spSelectSuppliedAreas');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
                 } else {
                     resolve(result.recordset);
                 }
-                
+
             }).catch(e => {
                 reject(e);
             });
@@ -363,9 +363,9 @@ export class Person extends BaseModel {
      * @description calls stored procedure spInsertWeekdayAvailability (@chvTimeOfDayArray nvarchar(256), @intDayOfWeekID INT, @intPersonID INT, @intModifiedByID INT)
      * 
      */
-    public putWeekdayAvailability(id?, dayOfWeek:number = 0,  timeOfDay:string = '', modifiedBy:number = 0):Promise<boolean>{
+    public putWeekdayAvailability(id?, dayOfWeek: number = 0, timeOfDay: string = '', modifiedBy: number = 0): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;            
+            let personId = this.id;
             if (id && Number.isInteger(id)) {
                 personId = id;
             }
@@ -373,15 +373,15 @@ export class Person extends BaseModel {
             if (modifiedBy && Number.isInteger(modifiedBy)) {
                 modifiedById = modifiedBy;
             }
-            if(!Number.isInteger(dayOfWeek)){
+            if (!Number.isInteger(dayOfWeek)) {
                 reject('Invalid dayOfWeek parameter supplied');
                 return;
             }
-            if(dayOfWeek < 0 || dayOfWeek > 7) {
+            if (dayOfWeek < 0 || dayOfWeek > 7) {
                 reject('dayOfWeek out of bounds');
                 return;
             }
-            if(timeOfDay.trim().length == 0) {
+            if (timeOfDay.trim().length == 0) {
                 reject('Invalid timeOfDay parameter supplied');
                 return;
             }
@@ -397,7 +397,7 @@ export class Person extends BaseModel {
             }).catch(e => {
                 reject(e);
             });
-            
+
         });
     }
 
@@ -411,9 +411,9 @@ export class Person extends BaseModel {
      * @param modifiedBy integer value that holds the id of the person inserting the record
      * @returns 
      */
-    public putSuppliedAreas(id?, localGovernmentAreaArr='', suppliedServicesGroupId=0, supplierAddressId=null, modifiedBy = null):Promise<boolean>{
+    public putSuppliedAreas(id?, localGovernmentAreaArr = '', suppliedServicesGroupId = 0, supplierAddressId = null, modifiedBy = null): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;            
+            let personId = this.id;
             if (id && Number.isInteger(+id)) {
                 personId = id;
             }
@@ -443,7 +443,7 @@ export class Person extends BaseModel {
      * @param isActiveInt integer value, 1 or greater for active and 0 for inactive
      * @returns Promise that will resolve to an array of Objects 
      */
-    public getContactPersons(id?, isActiveInt:number=0): Promise<Array<Object>>{
+    public getContactPersons(id?, isActiveInt: number = 0): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             if (id) {
@@ -474,13 +474,13 @@ export class Person extends BaseModel {
      * @param tz integer timezone value (defaults to 10)
      * @returns Promise that resolves to an Object array representing the teammates 
      */
-    public getTeam(id?, goodRelIdInt:number=1, tz:number=null): Promise<Array<Object>>{
+    public getTeam(id?, goodRelIdInt: number = 1, tz: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             if (id) {
                 personId = id;
             }
-            
+
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intGoodRelationshipID', sql.Int, goodRelIdInt);
@@ -506,7 +506,7 @@ export class Person extends BaseModel {
      * @param tz integer representation of timezone
      * @returns Promise that resolves to an Object containing key value pairs of the person
      */
-    public getJobDescription(id?, tz:number=null):Promise<Object>{
+    public getJobDescription(id?, tz: number = null): Promise<Object> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             let intTimeZone = null;
@@ -515,24 +515,24 @@ export class Person extends BaseModel {
                 intTimeZone = tz;
             }
 
-            if(id) {
+            if (id) {
                 personId = id;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                return queryRequest.execute('spSelectJobDescriptions');                
+                return queryRequest.execute('spSelectJobDescriptions');
             }).then(result => {
                 if (result.recordset.length > 0) {
                     resolve(result.recordset[0]);
                 } else {
                     reject('No record found.');
                 }
-                
+
             }).catch(e => {
                 reject(e);
-            }); 
+            });
         });
     }
 
@@ -542,10 +542,10 @@ export class Person extends BaseModel {
      * @param isActiveInt integer value for specifying that the supplier is active or inactive
      * @returns Promise that resolves an Object array containing the records for suppliers
      */
-    public getContactSuppliers(id?, isActiveInt:number = 1):Promise<Array<Object>>{
+    public getContactSuppliers(id?, isActiveInt: number = 1): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
-            if(id) {
+            if (id) {
                 personId = id;
             }
             const queryRequest = new sql.Request();
@@ -572,7 +572,7 @@ export class Person extends BaseModel {
      * @param tz integer value representing the timezone
      * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
      */
-    public getPersonalAssessments(id?, startDateDte:string=null, tz:number=null):Promise<Array<Object>>{
+    public getPersonalAssessments(id?, startDateDte: string = null, tz: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             if (id) {
@@ -585,7 +585,7 @@ export class Person extends BaseModel {
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalAssessments');
             }).then(result => {
-                if(result.recordset.length > 0) {
+                if (result.recordset.length > 0) {
                     resolve(result.recordset);
                 } else {
                     reject('No records found');
@@ -605,7 +605,7 @@ export class Person extends BaseModel {
      * @param tz integer value defaults to 10
      * @returns Promise that resolves to an array of Objects representing the personal care plan records
      */
-    public getPersonalCarePlans(id?, startDateDte:string=null, tz:number=null):Promise<Array<Object>>{
+    public getPersonalCarePlans(id?, startDateDte: string = null, tz: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             if (id) {
@@ -618,7 +618,7 @@ export class Person extends BaseModel {
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalCarePlans ');
             }).then(result => {
-                if(result.recordset.length > 0) {
+                if (result.recordset.length > 0) {
                     resolve(result.recordset);
                 } else {
                     reject('No records found');
@@ -638,7 +638,7 @@ export class Person extends BaseModel {
      * @param tz integer value for timezone, defaults to 10 if not supplied
      * @returns Object array consisting of the care plan goal records
      */
-    public getCarePlanGoalActions(id?, tz:number=null):Promise<Array<Object>> {
+    public getCarePlanGoalActions(id?, tz: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.id;
             if (id) {
@@ -650,7 +650,7 @@ export class Person extends BaseModel {
             this.pool.then(() => {
                 return queryRequest.execute('spSelectCarePlanGoalActions');
             }).then(result => {
-                if(result.recordset.length > 0) {
+                if (result.recordset.length > 0) {
                     resolve(result.recordset);
                 } else {
                     reject('No records found');
@@ -658,6 +658,80 @@ export class Person extends BaseModel {
             }).catch(e => {
                 reject(e);
             });
+        });
+    }
+
+    public getPersonDetailsByEmail(email: string): Promise<Object> {
+        return new Promise((resolve, reject) => {
+            this.pool.then(() => {
+                const queryRequest = new sql.Request();
+                queryRequest.input('chvEmailAddress', sql.NVarChar, email);
+                let queryPerson = `SELECT * FROM tblPersons where chvEmailAddress = @chvEmailAddress`;
+                /*
+SELECT vwPersonDetails.intPersonID, 
+                    vwPersonDetails.intStaffID, 
+                    vwPersonDetails.intApplicantID, 
+                    vwPersonDetails.intCareWorkerID, 
+                    vwPersonDetails.intEnquiryPersonID, 
+                    vwPersonDetails.intPotentialCustomerID, 
+                    vwPersonDetails.intCustomerID, 
+                    vwPersonDetails.chvUniqueCode, 
+                    vwPersonDetails.amtRatingScore, 
+                    vwPersonDetails.chvScorecardRating, 
+                    vwPersonDetails.chvScorecardRatingAlert,
+                    vwPersonDetails.intRatingCount,
+                    vwPersonDetails.chvSupplierIDs,
+                    vwPersonDetails.chvEmployerNames,
+                    vwPersonDetails.chvTitle, 
+                    vwPersonDetails.chvFirstName, 
+                    vwPersonDetails.chvPreferredName, 
+                    vwPersonDetails.chvLastName, 
+                    vwPersonDetails.chvPersonName, 
+                    vwPersonDetails.chvGenderID, 
+                    vwPersonDetails.chvGender, 
+                    FORMAT(vwPersonDetails.dteDateOfBirth, 'd MMM yyyy') AS dteDateOfBirth, 
+                    vwPersonDetails.intAge, 
+                    vwPersonDetails.chvEmailAddress, 
+                    vwPersonDetails.intBirthCountryID, 
+                    vwPersonDetails.chvBirthCountryName, 
+                    vwPersonDetails.chvBirthCountryFlagName, 
+                    vwPersonDetails.intNationalityID, 
+                    vwPersonDetails.chvNationality, 
+                    vwPersonDetails.chvNationalityFlagName, 
+                    vwPersonDetails.intReligionID, 
+                    vwPersonDetails.chvReligion, 
+                    vwPersonDetails.chvLanguageAssistance,
+                    vwPersonDetails.chvLanguages,
+                    vwPersonDetails.intCountryID, 
+                    vwPersonDetails.chvCountryName, 
+                    vwPersonDetails.chvCountryFlagName, 
+                    vwPersonDetails.chvPhoneNumber, 
+                    vwPersonDetails.chvUnitID, 
+                    vwPersonDetails.chvBuildingName, 
+                    vwPersonDetails.chvStreetAddress, 
+                    vwPersonDetails.chvCityName, 
+                    vwPersonDetails.intStateID, 
+                    vwPersonDetails.chvStateName, 
+                    vwPersonDetails.chvStateAbbrev, 
+                    vwPersonDetails.chvPostCode, 
+                    vwPersonDetails.intPersonModifiedByID, 
+                    vwPersonDetails.chvPersonModifiedBy, 
+                    vwPersonDetails.dtePersonModified
+            FROM	vwPersonDetails
+            WHERE	vwPersonDetails.chvEmailAddress = @chvEmailAddress
+                */
+                return queryRequest.query(queryPerson);
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset[0]);
+                } else {
+                    reject('No record found.');
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+
+
         });
     }
 
