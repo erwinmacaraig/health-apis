@@ -662,6 +662,42 @@ export class Person extends BaseModel {
     }
 
     /**
+     * Retrieve personal care plans and assessment for a person
+     * @param id integer value for the person representing tblPersons.intPersonID
+     * @param chvNoticeFor String value for the type of Person recieving the notice e.g 'Care Worker'
+     * @param chvNoticeVisibleToArray String value for the State abbreviation that the notice is for e.g. 'NSW'
+     * @param tz integer value defaults to 10
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
+    public getPersonalNotices(id?, noticeFor:string=null, noticeVisibleTo:string=null, tz:number=null):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            // [spSelectPersonalNotices] (@intPersonID int, @chvNoticeFor nvarchar(255), @chvNoticeVisibleToArray nvarchar(510), @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, id);
+            queryRequest.input('chvNoticeFor', sql.nVarChar(255), noticeFor);
+            queryRequest.input('chvNoticeVisibleToArray', sql.nVarChar(510), noticeVisibleTo);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalNotices');
+            }).then(result => {
+                if(result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
+    /**
      * closes database connection
      */
     public closeConnection() {
