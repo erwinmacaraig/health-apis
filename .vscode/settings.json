@@ -1,5 +1,5 @@
 {
-    "azureFunctions.deploySubpath": "PersonDetails",
+    "azureFunctions.deploySubpath": "PersonFnc",
     "azureFunctions.postDeployTask": "npm install (functions)",
     "azureFunctions.projectLanguage": "TypeScript",
     "azureFunctions.projectRuntime": "~3",
