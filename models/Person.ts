@@ -797,12 +797,17 @@ SELECT vwPersonDetails.intPersonID,
         });
     }
 
+    /**
+     * Retrieve personal access and roles from email person
+     * @param chvEmailAddress String value for the State abbreviation that the notice is for e.g. 'NSW'
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
     public getPersonalAccess(email: string): Promise<Object> {
         return new Promise((resolve, reject) => {
+            const queryRequest = new sql.Request();
+            queryRequest.input('chvEmailAddress', sql.VarChar(255), email);
             this.pool.then(() => {
                 // [spCheckUserAccess] (@chvEmailAddress nvarchar(255)) 
-                const queryRequest = new sql.Request();
-                queryRequest.input('chvEmailAddress', sql.NVarChar, email);
                 return queryRequest.execute('spCheckUserAccess');
             }).then(result => {
                 if (result.recordset.length > 0) {
