@@ -797,6 +797,25 @@ SELECT vwPersonDetails.intPersonID,
         });
     }
 
+    public getPersonalAccess(email: string): Promise<Object> {
+        return new Promise((resolve, reject) => {
+            this.pool.then(() => {
+                // [spCheckUserAccess] (@chvEmailAddress nvarchar(255)) 
+                const queryRequest = new sql.Request();
+                queryRequest.input('chvEmailAddress', sql.NVarChar, email);
+                return queryRequest.execute('spCheckUserAccess');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset[0]);
+                } else {
+                    reject('No record found.');
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
     /**
      * Retrieve personal care plans and assessment for a person
      * @param id integer value for the person representing tblPersons.intPersonID
