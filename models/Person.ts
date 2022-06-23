@@ -501,6 +501,68 @@ export class Person extends BaseModel {
     }
 
     /**
+     * Lists the Customers of a particular person
+     * @param id integer value that represents tblPerson.intPersonID
+     * @param tz integer timezone value (defaults to 10)
+     * @returns Promise that resolves to an Object array representing the teammates 
+     */
+    public getPersonalCustomers(id?, tz: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            // spSelectPersonalCustomers (@intPersonID int, @intTimeZone int)
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalCustomers');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    /**
+     * Lists the Consumer Contacts of a particular person
+     * @param id integer value that represents tblPerson.intPersonID
+     * @param tz integer timezone value (defaults to 10)
+     * @returns Promise that resolves to an Object array representing the teammates 
+     */
+    public getPersonalConsumers(id?, tz: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.id;
+            if (id) {
+                personId = id;
+            }
+            // spSelectPersonalConsumers (@intPersonID int, @intTimeZone int)
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, tz);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalConsumers');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    /**
      * Gives you the particular job details and description of a person
      * @param id integer representing tblPersons.intPersonID
      * @param tz integer representation of timezone
