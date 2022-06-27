@@ -2,11 +2,11 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const id = +req.query.id || 0;
+    const scheduledEventID = +req.query.scheduledEventID || 0;
     const timeZone = +req.query.timeZone || null;
     let errorMessages:Array<Object> = [];
     
-    if (!id) {
+    if (!scheduledEventID) {
         errorMessages.push({
             error: 'Invalid event id'
         });
@@ -24,7 +24,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const person = new Person();
-        let res = await person.getScheduledEvent(id, timeZone);
+        let res = await person.getScheduledEvent(scheduledEventID, timeZone);
         context.res = {
             status: 200, 
             body: res,
