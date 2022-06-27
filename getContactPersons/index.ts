@@ -2,17 +2,17 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    let id:number;
+    let personID:number;
    
-    if(req.query.id) {
-        id = +req.query.id;
+    if(req.query.personID) {
+        personID = +req.query.personID;
         const person = new Person();
         let isActiveInt = 1;        
         if (Number.isInteger(+req.query.intIsActive)) {
             isActiveInt = +req.query.intIsActive > 0 ? 1:0;
         }
         try {
-            let res = await person.getContactPersons(id, isActiveInt);
+            let res = await person.getContactPersons(personID, isActiveInt);
             context.res = {
                 status: 200,
                 body: res,

@@ -3,12 +3,12 @@ import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     const id = +req.query.id || 0;
-    const tz = +req.query.tz || null;
+    const timeZone = +req.query.timeZone || null;
     let errorMessages:Array<Object> = [];
     
     if (!id) {
         errorMessages.push({
-            error: 'Invalid person id'
+            error: 'Invalid event id'
         });
     }
 
@@ -24,7 +24,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const person = new Person();
-        let res = await person.getScheduledEvent(id, tz);
+        let res = await person.getScheduledEvent(id, timeZone);
         context.res = {
             status: 200, 
             body: res,

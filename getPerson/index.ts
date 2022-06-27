@@ -3,7 +3,7 @@ import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
-    let id: number;
+    let personID: number;
     /*
    if (req.method === 'POST') {
        
@@ -34,12 +34,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
        }        
    } 
    */
-    if (req.query.id) {
-        id = +req.query.id;
+    if (req.query.personID) {
+        personID = +req.query.personID;
         const person = new Person();
         const tz = req.query.tz || null;
         try {
-            let res = await person.getPersonDetails(id, tz);
+            let res = await person.getPersonDetails(personID, tz);
             context.res = {
                 status: 200,
                 body: res,

@@ -2,11 +2,11 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const id = +req.query.id || 0;
-    const tz = +req.query.tz || null;
+    const personID = +req.query.personID || 0;
+    const timeZone = +req.query.timeZone || null;
     let errorMessages:Array<Object> = [];
     
-    if (!id) {
+    if (!personID) {
         errorMessages.push({
             error: 'Invalid Notice id'
         });
@@ -24,7 +24,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const notice = new Person();
-        let res = await notice.getNotice(id, tz);
+        let res = await notice.getNotice(personID, timeZone);
         context.res = {
             status: 200, 
             body: res,

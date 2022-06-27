@@ -2,16 +2,16 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const id = +req.query.id || 0;
-    const startDateDte = req.query.dteStartDate || null;
-    const tz = +req.query.tz || null;
+    const personID = +req.query.personID || 0;
+    const startDate = req.query.startDate || null;
+    const timeZone = +req.query.timeZone || null;
     let errorMessages:Array<Object> = [];
-    if (!id) {
+    if (!personID) {
         errorMessages.push({
             error: 'Invalid person id'
         });
     }
-    if (startDateDte && new Date(startDateDte).toString() == 'Invalid Date'){
+    if (startDate && new Date(startDate).toString() == 'Invalid Date'){
         errorMessages.push({
             error: 'Invalid Date'
         });
@@ -29,7 +29,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const person = new Person();
-        let res = await person.getPersonalCarePlans(id, startDateDte, tz);
+        let res = await person.getPersonalCarePlans(personID, startDate, timeZone);
         context.res = {
             status: 200, 
             body: res,

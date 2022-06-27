@@ -3,13 +3,13 @@ import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('HTTP trigger function getSuppliedAreas');
-    let id:number;
-    if (req.query.id) {
-        id = +req.query.id;
+    let personID:number;
+    if (req.query.personID) {
+        personID = +req.query.personID;
         const supplierId = +req.query.supplierId || 0;
         const person = new Person();
         try {
-            let res = await person.getSuppliedAreas(id, supplierId);
+            let res = await person.getSuppliedAreas(personID, supplierId);
             context.res = {
                 status: 200,
                 body: res,

@@ -2,10 +2,10 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const id:number = +req.query.id || 0;
+    const personID:number = +req.query.personID || 0;
     let isActiveInt = 1;
     let errorMessages:Array<Object> = [];
-    if (!id) {
+    if (!personID) {
         errorMessages.push({
             error: 'Invalid person id'
         });
@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const person = new Person();
-        const res = await person.getContactSuppliers(id, isActiveInt);
+        const res = await person.getContactSuppliers(personID, isActiveInt);
         context.res = {
             status: 200,
             body: res,

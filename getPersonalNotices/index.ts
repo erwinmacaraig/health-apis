@@ -2,13 +2,13 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const id = +req.query.id || 0;
+    const personID = +req.query.personID || 0;
     const noticeFor = req.query.chvNoticeFor || null;
     const noticeVisibleToArray = req.query.chvNoticeVisibleToArray || null;
-    const tz = +req.query.tz || null;
+    const timeZone = +req.query.timeZone || null;
     let errorMessages:Array<Object> = [];
     
-    if (!id) {
+    if (!personID) {
         errorMessages.push({
             error: 'Invalid person id'
         });
@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
     try {
         const notice = new Person();
-        let res = await notice.getPersonalNotices(id, noticeFor, noticeVisibleToArray, tz);
+        let res = await notice.getPersonalNotices(personID, noticeFor, noticeVisibleToArray, timeZone);
         context.res = {
             status: 200, 
             body: res,
