@@ -1,15 +1,17 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Person } from "../models/Person";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const personID:number = +req.query.personID || 0;
-    let isActiveInt = 1;
+    const id = +req.query.id || 0;
+    const timeZone = +req.query.timeZone || null;
     let errorMessages:Array<Object> = [];
-    if (!personID) {
+    
+    if (!id) {
         errorMessages.push({
-            error: 'Invalid person id'
+            error: 'Invalid event id'
         });
     }
+
     if (errorMessages.length > 0) {
         context.res = {
             status: 400, 
@@ -20,20 +22,16 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         };
         return;
     }
-    
-    if (Number.isInteger(+req.query.intIsActive)) {
-        isActiveInt = +req.query.intIsActive > 0 ? 1:0;
-    }
     try {
         const person = new Person();
-        const res = await person.getContactSuppliers(personID, isActiveInt);
+        let res = await person.getScheduledEvent(id, timeZone);
         context.res = {
-            status: 200,
+            status: 200, 
             body: res,
             headers: {
                 'Content-Type': 'application/json'
             }
-        }; 
+        };
     } catch(e) {
         context.log(e);
         context.res = {
@@ -42,8 +40,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             headers: {
                 'Content-Type': 'application/json'
             }
-        }; 
+        };
     }
+    
 
 };
 

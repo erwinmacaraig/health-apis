@@ -5,10 +5,10 @@ import { Context } from "@azure/functions";
 
 export class Person extends BaseModel {
     context: Context = null;
-    constructor(id?, context?) {
+    constructor(personID?, context?) {
         super();
-        if (id) {
-            this.id = id;
+        if (personID) {
+            this.personID = personID;
         }
         if (context) {
             this.context = context;
@@ -22,7 +22,7 @@ export class Person extends BaseModel {
      */
     public load(): Promise<Object> {
         return new Promise((resolve, reject) => {
-            let query = `SELECT * FROM  dbo.tblPersons WHERE intPersonID = ${this.id}`;
+            let query = `SELECT * FROM  dbo.tblPersons WHERE intPersonID = ${this.personID}`;
             this.pool.then(() => {
                 return sql.query(query);
             }).then(result => {
@@ -214,7 +214,7 @@ export class Person extends BaseModel {
     public create(createData: object = {}, context): any {
         this.dbFields = { ...createData };
         if ('intPersonID' in this.dbFields) {
-            this.id = this.dbFields['intPersonID'];
+            this.personID = this.dbFields['intPersonID'];
             this.dbUpdate().then(() => {
                 resolve('Update Success');
             }).catch(e => {
@@ -252,21 +252,21 @@ export class Person extends BaseModel {
 
     /**
      * Gives out personal information details of a person
-     * @param id integer value for tblPersons.intPersonID
-     * @param tz integer representation of timezone, defaults to 10
+     * @param personID integer value for tblPersons.intPersonID
+     * @param timeZone integer representation of timezone, defaults to 10
      * @returns Promise that resolves to an object
      */
-    public getPersonDetails(id?, tz?): Promise<Object> {
+    public getPersonDetails(personID?, timeZone?): Promise<Object> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
+            let personId = this.personID;
             let intTimeZone = null;
 
             if (intTimeZone) {
-                intTimeZone = tz;
+                intTimeZone = timeZone;
             }
 
-            if (id) {
-                personId = id;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
@@ -288,21 +288,21 @@ export class Person extends BaseModel {
 
     /**
      * list the availability of a care worker person
-     * @param id integer value representing the unique id of a care worker person (tblPersons.intPersonID)
-     * @param tz integer value for the timezone defaults to 10
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
      * @returns Promise that resolves to an array of objects
      */
-    public getWeekdayAvailability(id?, tz?): Promise<Array<Object>> {
+    public getWeekdayAvailability(personID?, timeZone?): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
+            let personId = this.personID;
             let intTimeZone = null;
 
             if (intTimeZone) {
-                intTimeZone = tz;
+                intTimeZone = timeZone;
             }
 
-            if (id) {
-                personId = id;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
@@ -324,15 +324,15 @@ export class Person extends BaseModel {
 
     /**
      * Stores information for a person's supplied areas of responsibility
-     * @param id integer value representing tblPersons.intPersonID
-     * @param supplierId integer value for the supplier ID
+     * @param personID integer value representing tblPersons.intPersonID
+     * @param supplierId integer value for the supplier personID
      * @returns Promise that resolves to an array of Objects
      */
-    public getSuppliedAreas(id?, supplierId = 0): Promise<Array<Object>> {
+    public getSuppliedAreas(personID?, supplierId = 0): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
@@ -354,20 +354,18 @@ export class Person extends BaseModel {
     }
 
     /**
-     * 
-     * @param id an integer the represents the intPersonId
+     * @param personID an integer the represents the intPersonId
      * @param dayOfWeek integer for the Day int value 1 for Monday up until 7 for Sunday
      * @param timeOfDay string formats to "1,2,3" for Morning, Afternoon, Evening respectively
-     * @param modifiedBy integer id that represents who modified the record
+     * @param modifiedBy integer personID that represents who modified the record
      * @returns a Promise that resolves to boolean when successful 
      * @description calls stored procedure spInsertWeekdayAvailability (@chvTimeOfDayArray nvarchar(256), @intDayOfWeekID INT, @intPersonID INT, @intModifiedByID INT)
-     * 
      */
-    public putWeekdayAvailability(id?, dayOfWeek: number = 0, timeOfDay: string = '', modifiedBy: number = 0): Promise<boolean> {
+    public putWeekdayAvailability(personID?, dayOfWeek: number = 0, timeOfDay: string = '', modifiedBy: number = 0): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id && Number.isInteger(id)) {
-                personId = id;
+            let personId = this.personID;
+            if (personID && Number.isInteger(personID)) {
+                personId = personID;
             }
             let modifiedById = personId;
             if (modifiedBy && Number.isInteger(modifiedBy)) {
@@ -402,8 +400,7 @@ export class Person extends BaseModel {
     }
 
     /**
-     * 
-     * @param id an integer the represents the intPersonId
+     * @param personID an integer the represents the intPersonId
      * @param localGovernmentAreaArr  string representation of an array of areas (defaults to emptry string),
      * refer to dbo.tlkpLocalGovernnmentAreas
      * @param suppliedServicesGroupId integer value defaults to 0. 
@@ -411,11 +408,11 @@ export class Person extends BaseModel {
      * @param modifiedBy integer value that holds the id of the person inserting the record
      * @returns 
      */
-    public putSuppliedAreas(id?, localGovernmentAreaArr = '', suppliedServicesGroupId = 0, supplierAddressId = null, modifiedBy = null): Promise<boolean> {
+    public putSuppliedAreas(personID?, localGovernmentAreaArr = '', suppliedServicesGroupId = 0, supplierAddressId = null, modifiedBy = null): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id && Number.isInteger(+id)) {
-                personId = id;
+            let personId = this.personID;
+            if (personID && Number.isInteger(+personID)) {
+                personId = personID;
             }
             let modifiedById = personId;
             if (modifiedBy && Number.isInteger(modifiedBy)) {
@@ -439,15 +436,15 @@ export class Person extends BaseModel {
 
     /**
      * retrieves the active contact person list
-     * @param id integer value representing tblPersons.intPersonID
+     * @param personID integer value representing tblPersons.intPersonID
      * @param isActiveInt integer value, 1 or greater for active and 0 for inactive
      * @returns Promise that will resolve to an array of Objects 
      */
-    public getContactPersons(id?, isActiveInt: number = 0): Promise<Array<Object>> {
+    public getContactPersons(personID?, isActiveInt: number = 0): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
@@ -469,22 +466,22 @@ export class Person extends BaseModel {
 
     /**
      * Lists the teammates of a particular person
-     * @param id integer value that represents tblPerson.intPersonID
+     * @param personID integer value that represents tblPerson.intPersonID
      * @param goodRelIdInt integer 0 or 1 representing good relationship 
-     * @param tz integer timezone value (defaults to 10)
+     * @param timeZone integer timezone value (defaults to 10)
      * @returns Promise that resolves to an Object array representing the teammates 
      */
-    public getTeam(id?, goodRelIdInt: number = 1, tz: number = null): Promise<Array<Object>> {
+    public getTeam(personID?, goodRelIdInt: number = 1, timeZone: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
 
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intGoodRelationshipID', sql.Int, goodRelIdInt);
-            queryRequest.input('intTimeZone', sql.Int, tz);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectTeam');
             }).then(result => {
@@ -501,22 +498,84 @@ export class Person extends BaseModel {
     }
 
     /**
+     * Lists the Customers of a particular person
+     * @param personID integer value that represents tblPerson.intPersonID
+     * @param timeZone integer timezone value (defaults to 10)
+     * @returns Promise that resolves to an Object array representing the teammates 
+     */
+    public getPersonalCustomers(personID?, timeZone: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            // spSelectPersonalCustomers (@intPersonID int, @intTimeZone int)
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalCustomers');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    /**
+     * Lists the Consumer Contacts of a particular person
+     * @param personID integer value that represents tblPerson.intPersonID
+     * @param timeZone integer timezone value (defaults to 10)
+     * @returns Promise that resolves to an Object array representing the teammates 
+     */
+    public getPersonalConsumers(personID?, timeZone: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            // spSelectPersonalConsumers (@intPersonID int, @intTimeZone int)
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalConsumers');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found.');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    /**
      * Gives you the particular job details and description of a person
-     * @param id integer representing tblPersons.intPersonID
-     * @param tz integer representation of timezone
+     * @param personID integer representing tblPersons.intPersonID
+     * @param timeZone integer representation of timezone
      * @returns Promise that resolves to an Object containing key value pairs of the person
      */
-    public getJobDescription(id?, tz: number = null): Promise<Object> {
+    public getJobDescription(personID?, timeZone: number = null): Promise<Object> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
+            let personId = this.personID;
             let intTimeZone = null;
 
             if (intTimeZone) {
-                intTimeZone = tz;
+                intTimeZone = timeZone;
             }
 
-            if (id) {
-                personId = id;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
@@ -538,15 +597,15 @@ export class Person extends BaseModel {
 
     /**
      * gives out a list of suppliers and the data for each
-     * @param id integer representation of tblPersons.intPersonID
+     * @param personID integer representation of tblPersons.intPersonID
      * @param isActiveInt integer value for specifying that the supplier is active or inactive
      * @returns Promise that resolves an Object array containing the records for suppliers
      */
-    public getContactSuppliers(id?, isActiveInt: number = 1): Promise<Array<Object>> {
+    public getContactSuppliers(personID?, isActiveInt: number = 1): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
             queryRequest.input('intPersonID', sql.Int, personId);
@@ -567,21 +626,21 @@ export class Person extends BaseModel {
 
     /**
      * Retrieves the personal assessment of a care worker to a person
-     * @param id integer representing tblPersons.intPersonID
-     * @param startDateDte DateTime2 value in the form of YYYY-MM-DD
-     * @param tz integer value representing the timezone
+     * @param personID integer representing tblPersons.intPersonID
+     * @param startDate DateTime2 value in the form of YYYY-MM-DD
+     * @param timeZone integer value representing the timezone
      * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
      */
-    public getPersonalAssessments(id?, startDateDte: string = null, tz: number = null): Promise<Array<Object>> {
+    public getPersonalAssessments(personID?, startDate: string = null, timeZone: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, id);
-            queryRequest.input('dteStartDate', sql.DateTime2, startDateDte);
-            queryRequest.input('intTimeZone', sql.Int, tz);
+            queryRequest.input('intPersonID', sql.Int, personID);
+            queryRequest.input('dteStartDate', sql.DateTime2, startDate);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalAssessments');
             }).then(result => {
@@ -600,21 +659,21 @@ export class Person extends BaseModel {
 
     /**
      * Retrieve personal care plans and assessment for a person
-     * @param id integer value for the person representing tblPersons.intPersonID
-     * @param startDateDte DateTime2 value for the start of the assessment
-     * @param tz integer value defaults to 10
+     * @param personID integer value for the person representing tblPersons.intPersonID
+     * @param startDate DateTime2 value for the start of the assessment
+     * @param timeZone integer value defaults to 10
      * @returns Promise that resolves to an array of Objects representing the personal care plan records
      */
-    public getPersonalCarePlans(id?, startDateDte: string = null, tz: number = null): Promise<Array<Object>> {
+    public getPersonalCarePlans(personID?, startDate: string = null, timeZone: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, id);
-            queryRequest.input('dteStartDate', sql.DateTime2, startDateDte);
-            queryRequest.input('intTimeZone', sql.Int, tz);
+            queryRequest.input('intPersonID', sql.Int, personID);
+            queryRequest.input('dteStartDate', sql.DateTime2, startDate);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalCarePlans ');
             }).then(result => {
@@ -632,21 +691,20 @@ export class Person extends BaseModel {
     }
 
     /**
-     * 
      * determines the care plan goals of a given person specified by intPersonID
-     * @param id integer value that represents intPersonID
-     * @param tz integer value for timezone, defaults to 10 if not supplied
+     * @param personID integer value that represents intPersonID
+     * @param timeZone integer value for timezone, defaults to 10 if not supplied
      * @returns Object array consisting of the care plan goal records
      */
-    public getCarePlanGoalActions(id?, tz: number = null): Promise<Array<Object>> {
+    public getCarePlanGoalActions(personID?, timeZone: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
-            let personId = this.id;
-            if (id) {
-                personId = id;
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, id);
-            queryRequest.input('intTimeZone', sql.Int, tz);
+            queryRequest.input('intPersonID', sql.Int, personID);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectCarePlanGoalActions');
             }).then(result => {
@@ -729,6 +787,156 @@ SELECT vwPersonDetails.intPersonID,
                 }
             }).catch((err) => {
                 reject(err);
+            });
+
+
+        });
+    }
+
+    /**
+     * Retrieve personal access and roles from email person
+     * @param chvEmailAddress String value for the State abbreviation that the notice is for e.g. 'NSW'
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
+    public getPersonalAccess(email: string): Promise<Object> {
+        return new Promise((resolve, reject) => {
+            const queryRequest = new sql.Request();
+            queryRequest.input('chvEmailAddress', sql.VarChar(255), email);
+            this.pool.then(() => {
+                // [spCheckUserAccess] (@chvEmailAddress nvarchar(255)) 
+                return queryRequest.execute('spCheckUserAccess');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset[0]);
+                } else {
+                    reject('No record found.');
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
+    /**
+     * Retrieve personal care plans and assessment for a person
+     * @param personID integer value for the person representing tblPersons.intPersonID
+     * @param chvNoticeFor String value for the type of Person recieving the notice e.g 'Care Worker'
+     * @param chvNoticeVisibleToArray String value for the State abbreviation that the notice is for e.g. 'NSW'
+     * @param timeZone integer value defaults to 10
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
+    public getPersonalNotices(personID?, noticeFor:string=null, noticeVisibleTo:string=null, timeZone:number=null):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            // [spSelectPersonalNotices] (@intPersonID int, @chvNoticeFor nvarchar(255), @chvNoticeVisibleToArray nvarchar(510), @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('chvNoticeFor', sql.VarChar(255), noticeFor);
+            queryRequest.input('chvNoticeVisibleToArray', sql.VarChar(510), noticeVisibleTo);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectPersonalNotices');
+            }).then(result => {
+                if(result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
+    /**
+     * Retrieve personal care plans and assessment for a person
+     * @param noticeID integer value for the notice representing intNoticeID
+     * @param timeZone integer value defaults to 10
+     * @returns Promise that resolves to an array of Objects representing the personal care plan records
+     */
+    public getNotice(noticeID?, timeZone:number=null):Promise<Array<Object>>{
+        return new Promise((resolve, reject) => {
+            let intNoticeID = noticeID;
+            // [spSelectNotice] (@intNoticeID int, @intTimeZone int)
+            const queryRequest = new sql.Request();
+            queryRequest.input('intNoticeID', sql.Int, intNoticeID);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectNotice');
+            }).then(result => {
+                if(result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+
+
+        });
+    }
+
+    /**
+     * Retrieves the personal assessment of a care worker to a person
+     * @param personID integer representing tblPersons.intPersonID
+     * @param EndDate DateTime2 value in the form of YYYY-MM-DD
+     * @param timeZone integer value representing the timezone
+     * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
+     */
+    public getScheduledEvents(personID?, endDate: string = null, timeZone: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            // [spSelectScheduledEvents] (@dteEndDate datetime2, @intPersonID int, @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('dteEndDate', sql.DateTime2, endDate);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectScheduledEvents');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * Retrieves the personal assessment of a care worker to a person
+     * @param scheduledEventID integer representing tblScheduledEvents.intScheduledEventID
+     * @param timeZone integer value representing the timezone
+     * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
+     */
+    public getScheduledEvent(scheduledEventID?, timeZone: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let eventID = scheduledEventID;
+            // [spSelectScheduledEvent] (@intScheduledEventID int, @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intScheduledEventID', sql.Int, eventID);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectScheduledEvent');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
             });
 
 

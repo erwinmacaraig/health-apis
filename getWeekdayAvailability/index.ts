@@ -3,13 +3,13 @@ import { Person } from "../models/Person";
 
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    let id:number;
-    if (req.query.id) {
-        id = +req.query.id;
-        const tz = req.query.tz || null;
+    let personID:number;
+    if (req.query.personID) {
+        personID = +req.query.personID;
+        const timeZone = req.query.timeZone || null;
         const person = new Person();
     try {
-        let res = await person.getWeekdayAvailability(id, tz);
+        let res = await person.getWeekdayAvailability(personID, timeZone);
         context.res = {
             status: 200,
             body: res,
