@@ -12,9 +12,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             error: 'Invalid person id'
         });
     }
-    if (endDate && new Date(endDate).toString() == 'Invalid Date'){
+    if ((!endDate) && new Date(endDate).toString() == 'Invalid Date'){
         errorMessages.push({
-            error: 'Invalid Date'
+            error: 'Invalid End Date'
         });
     }    
 

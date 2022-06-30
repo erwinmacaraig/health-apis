@@ -292,7 +292,7 @@ export class Person extends BaseModel {
      * @param timeZone integer value for the timezone defaults to 10
      * @returns Promise that resolves to an array of objects
      */
-    public getWeekdayAvailability(personID?, timeZone?): Promise<Array<Object>> {
+    public getPersonalAvailability(personID?, timeZone?): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.personID;
             let intTimeZone = null;
@@ -308,7 +308,8 @@ export class Person extends BaseModel {
             queryRequest.input('intPersonID', sql.Int, personId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                return queryRequest.execute('spSelectWeekdayAvailability');
+                // spSelectPersonalAvailability (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalAvailability');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
