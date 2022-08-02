@@ -962,7 +962,7 @@ SELECT vwPersonDetails.intPersonID,
      * @param timeZone integer value defaults to 10
      * @returns Promise that resolves to an array of Objects representing the personal care plan records
      */
-    public getPersonalNotices(personID?, noticeFor:string=null, noticeVisibleTo:string=null, timeZone:number=null):Promise<Array<Object>>{
+    public getPersonalNotices(personID?, noticeFor: string = null, noticeVisibleTo: string = null, timeZone: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.personID;
             if (personID) {
@@ -977,7 +977,7 @@ SELECT vwPersonDetails.intPersonID,
             this.pool.then(() => {
                 return queryRequest.execute('spSelectPersonalNotices');
             }).then(result => {
-                if(result.recordset.length > 0) {
+                if (result.recordset.length > 0) {
                     resolve(result.recordset);
                 } else {
                     reject('No records found');
@@ -996,7 +996,7 @@ SELECT vwPersonDetails.intPersonID,
      * @param timeZone integer value defaults to 10
      * @returns Promise that resolves to an array of Objects representing the personal care plan records
      */
-    public getNotice(noticeID?, timeZone:number=null):Promise<Array<Object>>{
+    public getNotice(noticeID?, timeZone: number = null): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let intNoticeID = noticeID;
             // [spSelectNotice] (@intNoticeID int, @intTimeZone int)
@@ -1006,7 +1006,7 @@ SELECT vwPersonDetails.intPersonID,
             this.pool.then(() => {
                 return queryRequest.execute('spSelectNotice');
             }).then(result => {
-                if(result.recordset.length > 0) {
+                if (result.recordset.length > 0) {
                     resolve(result.recordset);
                 } else {
                     reject('No records found');
@@ -1084,8 +1084,8 @@ SELECT vwPersonDetails.intPersonID,
      * closes database connection
      */
     public closeConnection() {
-        this.pool.then(() => {
-            return sql.close();
+        this.pool.then((pool) => {
+            return pool.close()
         });
     }
 }
