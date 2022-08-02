@@ -324,6 +324,80 @@ export class Person extends BaseModel {
     }
 
     /**
+     * list the Progress Notes of a person
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
+    public getPersonalProgressNotes(personID?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // spSelectPersonalProgressNotes (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalProgressNotes');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * list the JobDescriptions of a care worker person
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
+    public getPersonalJobDescriptions(personID?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // spSelectJobDescriptions (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectJobDescriptions');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
      * Stores information for a person's supplied areas of responsibility
      * @param personID integer value representing tblPersons.intPersonID
      * @param supplierId integer value for the supplier personID
@@ -340,6 +414,68 @@ export class Person extends BaseModel {
             queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
             this.pool.then(() => {
                 return queryRequest.execute('spSelectSuppliedAreas');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    /**
+     * Stores information for a person's supplied areas of responsibility
+     * @param personID integer value representing tblPersons.intPersonID
+     * @param supplierId integer value for the supplier personID
+     * @returns Promise that resolves to an array of Objects
+     */
+    public getSuppliedHealthConditions(personID?, supplierId = 0): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectSuppliedHealthConditions');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+
+        });
+    }
+
+    /**
+     * Stores information for a person's supplied areas of responsibility
+     * @param personID integer value representing tblPersons.intPersonID
+     * @param supplierId integer value for the supplier personID
+     * @returns Promise that resolves to an array of Objects
+     */
+    public getSuppliedServices(personID?, supplierId = 0): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intSupplierAddressID', sql.Int, supplierId);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectSuppliedServices');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
