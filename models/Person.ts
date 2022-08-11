@@ -329,6 +329,154 @@ export class Person extends BaseModel {
      * @param timeZone integer value for the timezone defaults to 10
      * @returns Promise that resolves to an array of objects
      */
+    public getConversationThread(threadID?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let threadId = 0;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (threadID) {
+                threadId = threadID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intThreadID', sql.Int, threadId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalConversationThreads');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * list the Progress Notes of a thread
+     * @param threadID integer value representing the unique threadID of a care worker thread (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
+    public getConversationMembers(threadID?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let threadId = 0;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (threadID) {
+                threadId = threadID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, threadId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalConversationThreads');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * list the Progress Notes of a thread
+     * @param threadID integer value representing the unique threadID of a care worker thread (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
+    public getConversationMessages(threadID?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let threadId = 0;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (threadID) {
+                threadId = threadID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, threadId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalConversationThreads');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * list the Progress Notes of a person
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
+    public getPersonalConversationThreads(personID?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            let intTimeZone = null;
+
+            if (intTimeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalConversationThreads');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * list the Progress Notes of a person
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
     public getPersonalProgressNotes(personID?, timeZone?): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.personID;
