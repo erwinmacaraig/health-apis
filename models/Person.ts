@@ -342,11 +342,11 @@ export class Person extends BaseModel {
                 threadId = threadID;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intThreadID', sql.Int, threadId);
+            queryRequest.input('intConversationThreadID', sql.Int, threadId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
-                return queryRequest.execute('spSelectPersonalConversationThreads');
+                // [spSelectConversationThread] (@intConversationThreadID int, @intTimeZone int)
+                return queryRequest.execute('spSelectConversationThread');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
@@ -379,11 +379,11 @@ export class Person extends BaseModel {
                 threadId = threadID;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, threadId);
+            queryRequest.input('intConversationThreadID', sql.Int, threadId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
-                return queryRequest.execute('spSelectPersonalConversationThreads');
+                // [spSelectConversationMembers] (@intConversationThreadID int, @intTimeZone int)
+                return queryRequest.execute('spSelectConversationMembers');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
@@ -416,11 +416,54 @@ export class Person extends BaseModel {
                 threadId = threadID;
             }
             const queryRequest = new sql.Request();
-            queryRequest.input('intPersonID', sql.Int, threadId);
+            queryRequest.input('intConversationThreadID', sql.Int, threadId);
             queryRequest.input('intTimeZone', sql.Int, intTimeZone);
             this.pool.then(() => {
-                // spSelectPersonalConversationThreads (@intPersonID int, @intTimeZone int)
-                return queryRequest.execute('spSelectPersonalConversationThreads');
+                // [spSelectConversationMessages] (@intConversationThreadID int, @intTimeZone int) 
+                return queryRequest.execute('spSelectConversationMessages');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
+     * list the Progress Notes of a person
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @param timeZone integer value for the timezone defaults to 10
+     * @returns Promise that resolves to an array of objects
+     */
+    public getPersonalConversationThread(personID?, conversationGroup?, timeZone?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            let conGroup = conversationGroup;
+            let intTimeZone = 0;
+
+            if (timeZone) {
+                intTimeZone = timeZone;
+            }
+
+            if (conversationGroup) {
+                conGroup = conversationGroup;
+            }
+
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intConversationOwnerID', sql.Int, personId);
+            queryRequest.input('chvConversationGroup', sql.VarChar(128), conGroup);
+            queryRequest.input('intTimeZone', sql.Int, intTimeZone);
+            this.pool.then(() => {
+                // [spSelectPersonalConversationThread] (@intConversationOwnerID int, @chvConversationGroup NVARCHAR(128), @intTimeZone int) 
+                return queryRequest.execute('spSelectPersonalConversationThread');
             }).then(result => {
                 if (result.recordset.length == 0) {
                     reject('No data found');
@@ -443,9 +486,9 @@ export class Person extends BaseModel {
     public getPersonalConversationThreads(personID?, timeZone?): Promise<Array<Object>> {
         return new Promise((resolve, reject) => {
             let personId = this.personID;
-            let intTimeZone = null;
+            let intTimeZone = 0;
 
-            if (intTimeZone) {
+            if (timeZone) {
                 intTimeZone = timeZone;
             }
 
@@ -1167,7 +1210,39 @@ SELECT vwPersonDetails.intPersonID,
         });
     }
 
-    /**
+    /** 
+     * Retrieves the personal assessment of a care worker to a person
+     * @param personID integer representing tblPersons.intPersonID
+     * @param EndDate DateTime2 value in the form of YYYY-MM-DD
+     * @param timeZone integer value representing the timezone
+     * @returns Promise that resolves to an Object array containing the general assessment and other supplementary information
+     */
+    public getScheduledEventsAvailable(personID?, endDate: string = null, timeZone: number = null): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+            if (personID) {
+                personId = personID;
+            }
+            // [spSelectScheduledEventsAvailable] (@dteEndDate datetime2, @intPersonID int, @intTimeZone int) 
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            queryRequest.input('dteEndDate', sql.DateTime2, endDate);
+            queryRequest.input('intTimeZone', sql.Int, timeZone);
+            this.pool.then(() => {
+                return queryRequest.execute('spSelectScheduledEventsAvailable');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /** 
      * Retrieves the personal assessment of a care worker to a person
      * @param personID integer representing tblPersons.intPersonID
      * @param EndDate DateTime2 value in the form of YYYY-MM-DD
