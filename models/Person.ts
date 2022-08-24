@@ -552,6 +552,36 @@ export class Person extends BaseModel {
     }
 
     /**
+     * list the Progress Notes of a person
+     * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
+     * @returns Promise that resolves to an array of objects
+     */
+    public getPersonalGroupServiceTasks(personID?): Promise<Array<Object>> {
+        return new Promise((resolve, reject) => {
+            let personId = this.personID;
+
+            if (personID) {
+                personId = personID;
+            }
+            const queryRequest = new sql.Request();
+            queryRequest.input('intPersonID', sql.Int, personId);
+            this.pool.then(() => {
+                // spSelectPersonalGroupServiceTasks (@intPersonID int, @intTimeZone int)
+                return queryRequest.execute('spSelectPersonalGroupServiceTasks');
+            }).then(result => {
+                if (result.recordset.length == 0) {
+                    reject('No data found');
+                } else {
+                    resolve(result.recordset);
+                }
+
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
+    /**
      * list the JobDescriptions of a care worker person
      * @param personID integer value representing the unique personID of a care worker person (tblPersons.intPersonID)
      * @param timeZone integer value for the timezone defaults to 10
