@@ -944,6 +944,25 @@ SELECT vwPersonDetails.intPersonID,
         });
     }
 
+    public checkPersonLogin(chvUniqueCode: String, passwd: String) {
+        return new Promise((resolve, reject) => {
+            const queryRequest = new sql.Request();
+            queryRequest.input('chvEmailAddress', sql.VarChar(255), chvUniqueCode);
+            queryRequest.input('chvPassword', sql.VarChar(255), passwd);
+            this.pool.then(() => {
+                return queryRequest.execute('spCheckUserLogin');
+            }).then(result => {
+                if (result.recordset.length > 0) {
+                    resolve(result.recordset);
+                } else {
+                    reject('No records found');
+                }
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+
     /**
      * closes database connection
      */
